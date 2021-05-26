@@ -4,13 +4,16 @@ const mongoose = require("mongoose");
 
 //importamos nuestras rutas (routes)
 const User = require("./routes/user");
-
+const Board = require("./routes/board");
+const Auth = require("./routes/auth");
 //configuracion del servidor 1
 
 const app = express();
 
 app.use(express.json());
 app.use("/api/user/", User);
+app.use("/api/auth/", Auth);
+app.use("/api/board", Board);
 
 const port = process.env.PORT || 3001;
 

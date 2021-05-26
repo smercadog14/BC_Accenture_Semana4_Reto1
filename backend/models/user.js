@@ -14,12 +14,11 @@ const userSchema = new mongoose.Schema({
 });
 
 //generamos el jwt para el usuario 3
-userSchema.methods.generateJWT = () => {
+userSchema.methods.generateJWT = function () {
   return jwt.sign(
     {
       _id: this._id,
       name: this.name,
-      email: this.email,
       iat: moment().unix(),
     },
     "secretJWT"

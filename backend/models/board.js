@@ -13,7 +13,7 @@ const boardSchema = new mongoose.Schema({
 });
 
 //collecion board 3
-const Board = mongose.model("board", boardSchema);
+const Board = mongoose.model("board", boardSchema);
 
 //exportamos el modulo 4
 module.exports = Board;
