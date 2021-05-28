@@ -6,8 +6,8 @@ const mongoose = require("mongoose");
 const User = require("./routes/user");
 const Board = require("./routes/board");
 const Auth = require("./routes/auth");
-//configuracion del servidor 1
 
+//configuracion del servidor 1
 const app = express();
 
 app.use(express.json());

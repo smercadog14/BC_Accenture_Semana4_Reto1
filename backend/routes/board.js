@@ -4,35 +4,44 @@ const router = express.Router();
 const Board = require("../models/board");
 const User = require("../models/user");
 const Auth = require("../middleware/auth");
+const { find } = require("../models/board");
+
+const findUser = (_idUser) => {
+  const user = await User.findById(_idUser);
+
+  if (!user) return res.status(401).send("El user no exite en db");
+};
 
 //registramos actividad sin imagen 2
 router.post("/saveTask", Auth, async (req, res) => {
-  //buscamos usuario de la peticion 3
-  const user = await User.findById(req.user._id);
-  // si no se encuentra el usuario 4
-  if (!user) return res.status(400).send("Usuario sin autenticado");
-  // creamos la nueva tarea 5
+  findUser(req.user._id);
+
   const board = new Board({
     userId: user._id,
     name: req.body.name,
     description: req.body.description,
     status: "to-do",
   });
-  //salvamos la nueva tarea 6
-  const result = await board.save();
 
+  const result = await board.save();
   return res.status(200).send({ result });
 });
 
+//listar tareas
 router.get("/listTask", Auth, async (req, res) => {
-  //buscamos el id del usuario logeado
-  const user = await User.findById(req.user._id);
-  //validamos si el usuario no exite
-  if (!user) return res.status(401).send("El user no exite en db");
-  //si existe vamos a listar las tareas asignadas a nuestro usuario
+  findUser(req.user._id);
+
   const board = await Board.find({ userId: req.user._id });
-  //devolvemos un array con todos los documents que tengan un id que coincida
+
   return res.status(200).send({ board });
+});
+
+//eliminar tarea
+router.delete("/:_id", Auth, async (req, res) => {
+  findUser(req.user._id);
+  const board = await Board.findByIdAndDelete(req.params._id);
+  if (!board) return res.status(401).send("Error to delete task");
+  return res.status(200).send({ mensaje: "task deleted" });
 });
 
 //esportamos el modulo 7
