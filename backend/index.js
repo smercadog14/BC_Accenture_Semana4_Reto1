@@ -1,31 +1,27 @@
 //importamos los modulos que vamos a usar
 const express = require("express");
-const mongoose = require("mongoose");
+const cors = require("cors");
+const { dbConnection } = require("./db/db");
+require("dotenv").config();
 
 //importamos nuestras rutas (routes)
+const Role = require("./routes/role");
 const User = require("./routes/user");
-const Board = require("./routes/board");
 const Auth = require("./routes/auth");
+const Board = require("./routes/board");
 
 //configuracion del servidor 1
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 app.use("/api/user/", User);
 app.use("/api/auth/", Auth);
-app.use("/api/board", Board);
+app.use("/api/board/", Board);
+app.use("/api/role/", Role);
 
-const port = process.env.PORT || 3001;
+app.listen(process.env.PORT, () =>
+  console.log("Server Working on Port", process.env.PORT)
+);
 
-app.listen(port, () => console.log("server on port", port));
-
-//conexion con mongoDB 2
-mongoose
-  .connect("mongodb://localhost:27017/taskcreatorscrum", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true,
-  })
-  .then(() => console.log("Conection MongoDB ON"))
-  .catch((err) => console.log("Failed To Conect MongoDB", err));
+dbConnection();

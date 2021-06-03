@@ -1,48 +1,107 @@
-//importamos los modulos necesarios  1
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Board = require("../models/board");
-const User = require("../models/user");
 const Auth = require("../middleware/auth");
-const { find } = require("../models/board");
+const UserAuth = require("../middleware/user");
+const Upload = require("../middleware/file");
 
-const findUser = (_idUser) => {
-  const user = await User.findById(_idUser);
+router.post(
+  "/saveTaskImg",
+  Upload.single("image"),
+  Auth,
+  UserAuth,
+  async (req, res) => {
+    if (!req.body.name || !req.body.description)
+      return res.status(401).send("Process failed: Incomplete data");
 
-  if (!user) return res.status(401).send("El user no exite en db");
-};
+    if (req.file) {
+      if (
+        req.file.mimetype !== "image/png" &&
+        req.file.mimetype !== "image/jpg" &&
+        req.file.mimetype !== "image/jpeg" &&
+        req.file.mimetype !== "image/gif"
+      )
+        return res.status(401).send("Accepte format: .png, .jpg, .jpeg, .gif");
+    }
 
-//registramos actividad sin imagen 2
-router.post("/saveTask", Auth, async (req, res) => {
-  findUser(req.user._id);
+    const url = req.protocol + "://" + req.get("host");
+    let imageUrl = "";
+    if (req.file !== undefined && req.file.filename)
+      imageUrl = url + "/uploads/" + req.file.filename;
+
+    const board = new Board({
+      userId: req.user._id,
+      name: req.body.name,
+      description: req.body.description,
+      status: "to-do",
+      imageUrl: imageUrl,
+    });
+
+    const result = await board.save();
+    if (!result)
+      return res.status(401).send("Process failed: Failed to register task");
+    return res.status(200).send({ result });
+  }
+);
+
+router.post("/saveTask", Auth, UserAuth, async (req, res) => {
+  if (!req.body.name || !req.body.description)
+    return res.status(401).send("Process failed: Incomplete data");
 
   const board = new Board({
-    userId: user._id,
+    userId: req.user._id,
     name: req.body.name,
     description: req.body.description,
     status: "to-do",
   });
 
   const result = await board.save();
+  if (!result)
+    return res.status(401).send("Process failed: Failed to register task");
   return res.status(200).send({ result });
 });
 
-//listar tareas
-router.get("/listTask", Auth, async (req, res) => {
-  findUser(req.user._id);
-
+router.get("/listTask", Auth, UserAuth, async (req, res) => {
+  const validId = mongoose.Types.ObjectId.isValid(req.user._id);
+  if (!validId) return res.status(401).send("Process failed: Invalid id");
   const board = await Board.find({ userId: req.user._id });
-
+  if (!board) return res.status(401).send("Process failed: No tasks to delete");
   return res.status(200).send({ board });
 });
 
-//eliminar tarea
-router.delete("/:_id", Auth, async (req, res) => {
-  findUser(req.user._id);
-  const board = await Board.findByIdAndDelete(req.params._id);
-  if (!board) return res.status(401).send("Error to delete task");
-  return res.status(200).send({ mensaje: "task deleted" });
+router.put("/updateTask", Auth, UserAuth, async (req, res) => {
+  if (
+    !req.body._id ||
+    !req.body.name ||
+    !req.body.status ||
+    !req.body.description
+  )
+    return res.status(401).send("Process failed: Incomplete data");
+
+  const validId = mongoose.Types.ObjectId.isValid(req.body._id);
+  if (!validId) return res.status(401).send("Process failed: Invalid id");
+
+  const board = await Board.findByIdAndUpdate(
+    req.body._id,
+    {
+      userId: req.user._id,
+      name: req.body.name,
+      status: req.body.status,
+      description: req.body.description,
+    },
+    { new: true }
+  );
+  if (!board) return res.status(401).send("Process failed: Task not found");
+  return res.status(200).send({ board });
 });
 
-//esportamos el modulo 7
+router.delete("/deleteTask/:_id", Auth, UserAuth, async (req, res) => {
+  const validId = mongoose.Types.ObjectId.isValid(req.params._id);
+  if (!validId) return res.status(401).send("Process failed: Invalid id");
+  const board = await Board.findByIdAndDelete(req.params._id);
+  if (!board) return res.status(401).send("Process failed: Task not found");
+  return res.status(200).send("Task deleted");
+});
+
 module.exports = router;
