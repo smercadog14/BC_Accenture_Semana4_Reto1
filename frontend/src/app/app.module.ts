@@ -27,20 +27,23 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     LoginComponent,
     RegisterComponent,
-    ListRoleComponent,
-    ListUserComponent,
-    RegisterRoleComponent,
-    RegisterUserComponent,
-    UpdateRoleComponent,
-    UpdateUserComponent,
     ListTaskComponent,
     RegisterTaskComponent,
+    ListUserComponent,
+    RegisterUserComponent,
+    UpdateUserComponent,
+    ListRoleComponent,
+    RegisterRoleComponent,
+    UpdateRoleComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,6 +56,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatCardModule,
     MatIconModule,
     MatExpansionModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [AuthService, BoardService, AuthGuard, TokenInterceptorService],
   bootstrap: [AppComponent],
