@@ -6,7 +6,7 @@ const auth = (req, res, next) => {
 
   if (!jwtToken)
     return res.status(401).send("Authorization denied: there isno token");
-
+  console.log(jwtToken);
   jwtToken = jwtToken.split(" ")[1];
 
   if (!jwtToken)
