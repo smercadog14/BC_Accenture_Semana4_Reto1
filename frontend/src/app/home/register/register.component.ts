@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -25,17 +26,17 @@ export class RegisterComponent implements OnInit {
       !this.registerData.email ||
       !this.registerData.password
     ) {
-      console.log('Failed: Process: Incomplete data');
-      this.errorMessage = 'Failed: Process: Incomplete data';
+      console.log('Failed process: Incomplete data');
+      this.errorMessage = 'Failed process: Incomplete data';
       this.closeAlert();
       this.registerData = {};
     } else {
       this.auth.registerUser(this.registerData).subscribe(
-        (res) => {
+        (res: any) => {
           console.log(res);
-          this.successMessage = 'Register user: Sucessfull';
-          this.closeAlert();
+          localStorage.setItem('token', res.jwtToken);
           this.registerData = {};
+          this.router.navigate(['/saveTask']);
         },
         (err) => {
           console.log(err);
@@ -50,7 +51,7 @@ export class RegisterComponent implements OnInit {
     setTimeout(() => {
       this.successMessage = '';
       this.errorMessage = '';
-    }, 6000);
+    }, 3000);
   }
   closeX() {
     this.successMessage = '';

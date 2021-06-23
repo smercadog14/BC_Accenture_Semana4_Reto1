@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   public loginData: any;
   public errorMessage: String;
+
   constructor(private auth: AuthService, private router: Router) {
     this.loginData = {};
     this.errorMessage = '';
@@ -19,8 +20,8 @@ export class LoginComponent implements OnInit {
 
   login() {
     if (!this.loginData.email || !this.loginData.password) {
-      console.log('Failed process: Incomplete Data');
-      this.errorMessage = 'Failed Process: Incomplete Data';
+      console.log('Failed process: Incomplete data');
+      this.errorMessage = 'Failed process: Incomplete data';
       this.closeAlert();
       this.loginData = {};
     } else {
@@ -45,6 +46,7 @@ export class LoginComponent implements OnInit {
       this.errorMessage = '';
     }, 3000);
   }
+
   closeX() {
     this.errorMessage = '';
   }
