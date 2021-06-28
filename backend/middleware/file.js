@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (!req.body.name || !req.body.description) file = "";
+    // if (!req.body.name || !req.body.description) file = "";
     if (file == "") return cb(null, false);
     else cb(null, true);
   },

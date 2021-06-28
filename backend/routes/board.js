@@ -24,7 +24,7 @@ router.post(
       )
         return res.status(401).send("Accepte format: .png, .jpg, .jpeg, .gif");
     }
-
+ 
     const url = req.protocol + "://" + req.get("host");
     let imageUrl = "";
     if (req.file !== undefined && req.file.filename)
@@ -101,7 +101,7 @@ router.delete("/deleteTask/:_id", Auth, UserAuth, async (req, res) => {
   if (!validId) return res.status(401).send("Process failed: Invalid id");
   const board = await Board.findByIdAndDelete(req.params._id);
   if (!board) return res.status(401).send("Process failed: Task not found");
-  return res.status(200).send("Task deleted");
+  return res.status(200).send({ message: "Task deleted" });
 });
 
 module.exports = router;
