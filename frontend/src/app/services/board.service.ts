@@ -12,6 +12,10 @@ export class BoardService {
     this.env = environment.APP_URL;
   }
 
+  saveTaskImg(board: any) {
+    return this.http.post<any>(this.env + 'board/saveTaskImg', board);
+  }
+
   saveTask(board: any) {
     return this.http.post<any>(this.env + 'board/saveTask', board);
   }
